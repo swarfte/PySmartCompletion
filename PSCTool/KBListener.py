@@ -11,21 +11,18 @@ def load_json(setting): #讀取設定檔用
     global config
     config = setting
 
-def on_press(key):#按下按鍵時執行
-    try:
-        print(f"按下了 {key.char} 鍵")
-    except AttributeError: # 特殊按鍵的情況
-        print(f"按下了 {key} 鍵")
+def key_down(key):#按下按鍵時執行
+    PF.on_press_text(key) #輸出文本
 
-def on_release(key):#鬆開按鍵時執行
+def key_up(key):#鬆開按鍵時執行
     global config #設定檔
     global vocabulary #待查詢的生字
     global key_input # 儲存生字的開關
 
-    print(f"鬆開了 {key} 鍵")
+    PF.on_release_text(key) #輸出文本
 
     #設置退出監聽優先級最高
-    if key == pk.Key.esc:
+    if key == pk.Key.esc: #退出監聽
         return PF.exitListen()
 
     if key == pk.Key.ctrl_l: #*啟動/關閉儲存生字的功能
@@ -36,19 +33,13 @@ def on_release(key):#鬆開按鍵時執行
 
     if key_input: #啟用時儲存生字
         PF.save_words(key,vocabulary)
-        # if key != pk.Key.ctrl_l and key != pk.Key.caps_lock: #無視左ctrl的操作和檢測操作人
-        #     vocabulary.append(str(key).replace("'","")) #去除多餘的單引號
 
 
     if key == pk.Key.alt_l: #*清空儲存的生字
-        print('清空儲存的生字')
-        vocabulary = []
-
+        vocabulary = PF.clean_save_word(vocabulary)
 
     if len(vocabulary) != 0:
-        if key == pk.Key.shift_l:
-            key_match = "".join(vocabulary)
-            print(f"檢測數據庫中包含 {key_match} 的生字")
+        if key == pk.Key.shift_l: #啟動搜索功能
             PF.completion(config, vocabulary)
 
 class KBListener(): #用於監聽鍵盤線程
@@ -57,7 +48,5 @@ class KBListener(): #用於監聽鍵盤線程
         load_json(config)
 
     def start(self): #啟動線程
-        with pk.Listener(
-                on_press=on_press,
-                on_release=on_release) as listener:
+        with pk.Listener(on_press=key_down, on_release=key_up) as listener:
             listener.join()
