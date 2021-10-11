@@ -36,4 +36,4 @@
 * **WordBank1.json**為預設的數據庫
 * 在**setting.json**中修改**WordBank_path**屬性能指定新的數據庫
 
-###版本號:V1.1.3
+###版本號:V1.1.4
