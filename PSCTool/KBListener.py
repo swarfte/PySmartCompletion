@@ -1,10 +1,13 @@
 import pynput.keyboard as pk
 import PSCTool.KBFunction as PF
 
-# 鍵盤監聽全局變量
+# 鍵盤監聽使用的全局變量
 config = None
-vocabulary = []
+input_vocabulary = []
 key_input = False
+key_output = False
+match_word = []
+keyboard = pk.Controller()
 
 
 def load_json(setting):  # 讀取設定檔用
@@ -18,8 +21,11 @@ def key_down(key):  # 按下按鍵時執行
 
 def key_up(key):  # 鬆開按鍵時執行
     global config  # 設定檔
-    global vocabulary  # 待查詢的生字
+    global input_vocabulary  # 待查詢的生字
     global key_input  # 儲存生字的開關
+    global key_output  # 輸出生字的開關
+    global keyboard  # 虛擬鍵盤
+    global match_word  # 儲存匹配的生字
 
     PF.on_release_text(key)  # 輸出文本
 
@@ -30,22 +36,38 @@ def key_up(key):  # 鬆開按鍵時執行
     if key == pk.Key.ctrl_l:  # *啟動/關閉儲存生字的功能
         key_input = PF.save_words_setup(key_input)
 
-    if key == pk.Key.alt_l:  # 顯示目前的生字
-        PF.current_words(vocabulary)
+    if key == pk.Key.alt_gr:  # 顯示目前的生字
+        PF.current_words(input_vocabulary)
 
     if key_input:  # 啟用時儲存生字
-        PF.save_words(key, vocabulary)
+        PF.save_words(key, input_vocabulary)
 
-    if key == pk.Key.alt_r:  # *清空儲存的生字
-        vocabulary = PF.clean_save_word(vocabulary)
+    if key == pk.Key.ctrl_r:  # *清空儲存的生字
+        input_vocabulary = PF.clean_save_word(input_vocabulary)
 
     if key == pk.Key.shift_l:  # 按生字搜索功能
-        if len(vocabulary) > 0:
-            PF.key_word_match(config, vocabulary, key_input)  # True為啟動首字母匹配功能,False為啟動包含搜索
+        if len(input_vocabulary) > 0:
+            match_word = PF.key_word_match(config, input_vocabulary, key_input)  # True為啟動首字母匹配功能,False為啟動包含搜索
+            key_input = False
+            PF.output_match_word_number(match_word, keyboard)  # 在模擬鍵盤輸入有多少個生字匹現
 
     if key == pk.Key.shift_r:  # 啟動頭尾字母匹配模式
-        if len(vocabulary) == 2:
-            PF.find_in_head_and_tail(config, vocabulary)
+        if len(input_vocabulary) == 2:
+            match_word = PF.find_in_head_and_tail(config, input_vocabulary)
+            key_input = False
+            PF.output_match_word_number(match_word, keyboard)
+
+    if key == pk.Key.alt_l:  # 用於選擇和輸出匹配的生字
+        if key_output:
+            print("關閉匹配生字輸出")
+            key_output = False
+        else:
+            print("開啟匹配生字輸出")
+            key_output = True
+
+    if key_output:  # 啟用時輸出被選擇的匹配生字
+        if str(key)[1:-1].isdigit() and len(match_word) != 0:
+            PF.output_choice_match_word(key, match_word, keyboard)
 
 
 class KBListener:  # 用於監聽鍵盤線程

@@ -60,6 +60,7 @@ def find_in_head_and_tail(config, vocabulary):  # 查找頭尾匹配的生字
     print(match_word)
     return match_word
 
+
 def open_json(path):  # 加載設定檔
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -97,9 +98,10 @@ def save_words_setup(key_input):  # 儲存生字功能
 
 
 def save_words(key, vocabulary):  # 判斷生字
-    if key != pk.Key.ctrl_l and key != pk.Key.caps_lock:  # 無視左ctrl的開關操作和檢測生字操作
+    if key != pk.Key.ctrl_l and key != pk.Key.ctrl_r:  # 無視左右ctrl的開關操作和消除生字操作
         if key != pk.Key.shift_l and key != pk.Key.shift_r:  # 無視左右shirt的搜索功能
-            vocabulary.append(str(key).replace("'", ""))  # 去除多餘的單引號
+            if key != pk.Key.alt_l and key != pk.Key.alt_gr:  # 無視左右alt的輸出和視檢測生字操作
+                vocabulary.append(str(key).replace("'", ""))  # 去除多餘的單引號
 
 
 def clean_save_word(vocabulary):  # 清空保留的生字
@@ -115,3 +117,22 @@ def exit_listen():  # 退出監聽
 
 def current_words(vocabulary):  # 顯示當前的生字
     print(vocabulary)
+
+
+def output_match_word_number(match_word, keyboard):
+    number = str(len(match_word))
+    print(f"一共有 {number} 個生字滿足條件")
+    for x in range(len(number)):
+        keyboard.press(number[x])  # down keyboard
+        keyboard.release(number[x])  # up keyboard
+
+    return number
+
+
+def output_choice_match_word(key, match_word, keyboard):  # 輸出被選擇的匹配生字
+    number = int(str(key)[1:-1]) - 1
+    output_word = match_word[number]
+    print(f"選擇的生字為 {output_word} ")
+    for x in range(len(output_word)):
+        keyboard.press(output_word[x])
+        keyboard.release(output_word[x])
