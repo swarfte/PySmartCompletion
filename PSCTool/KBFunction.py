@@ -49,7 +49,7 @@ def find_in_inside(vocabulary, data):  # 搜索是否包含在內
 def find_in_head_and_tail(config, vocabulary):  # 查找頭尾匹配的生字
     sentence = "".join(vocabulary)
     print(f"字符 {sentence} 啟用頭尾字母匹配模式")
-    data = get_word_list(config, vocabulary)
+    data = get_word_list(config)
     choice = re.compile(f"^{vocabulary[0]}[a-z]*{vocabulary[1]}$")
     match_word = []
     for x in range(len(data)):
@@ -68,7 +68,7 @@ def open_json(path):  # 加載設定檔
 
 
 def key_word_match(config, vocabulary, begin):  # 多生字匹配模式
-    data = get_word_list(config, vocabulary)
+    data = get_word_list(config)
     if begin:  # 判斷是首字母匹配還是包含匹配模式
         match_word = find_in_head(vocabulary, data)
     else:
@@ -79,8 +79,7 @@ def key_word_match(config, vocabulary, begin):  # 多生字匹配模式
     return match_word
 
 
-def get_word_list(config, vocabulary):  # 獲取數據庫的生字
-    key_match = "".join(vocabulary)
+def get_word_list(config):  # 獲取數據庫的生字
     target = "WordBank_path"  # 指定讀取的數據庫
     vocabulary_type = "english_word"  # 指定讀取的生字
     data = open_json(open_json(config)[target])[vocabulary_type]  # *獲取對應數據庫的全部英文生字
@@ -97,17 +96,29 @@ def save_words_setup(key_input):  # 儲存生字功能
         return True
 
 
-def save_words(key, vocabulary):  # 判斷生字
+def save_words_setup_tip(key_input, keyboard, tip_symbol):  # 儲存生字的提示
+    if not key_input:
+        keyboard.press(tip_symbol)
+        keyboard.release(tip_symbol)
+
+
+def save_words(key, vocabulary, tip_symbol):  # 判斷生字
     if key != pk.Key.ctrl_l and key != pk.Key.ctrl_r:  # 無視左右ctrl的開關操作和消除生字操作
         if key != pk.Key.shift_l and key != pk.Key.shift_r:  # 無視左右shirt的搜索功能
             if key != pk.Key.alt_l and key != pk.Key.alt_gr:  # 無視左右alt的輸出和視檢測生字操作
-                vocabulary.append(str(key).replace("'", ""))  # 去除多餘的單引號
+                if str(key)[1:-1] != tip_symbol and key != pk.Key.backspace:
+                    vocabulary.append(str(key).replace("'", ""))  # 去除多餘的單引號
 
 
-def clean_save_word(vocabulary):  # 清空保留的生字
+def clean_word(vocabulary):  # 清空保留的生字
     print('清空儲存的生字')
     vocabulary = []
     return vocabulary
+
+
+def clean_word_tip(keyboard, tip_symbol):  # 清除儲存生字的提示
+    keyboard.press(tip_symbol)
+    keyboard.release(tip_symbol)
 
 
 def exit_listen():  # 退出監聽
@@ -119,7 +130,7 @@ def current_words(vocabulary):  # 顯示當前的生字
     print(vocabulary)
 
 
-def output_match_word_number(match_word, keyboard):
+def output_match_word_number(match_word, keyboard):  # 模擬鍵算輸出匹配生字的數量
     number = str(len(match_word))
     print(f"一共有 {number} 個生字滿足條件")
     for x in range(len(number)):
@@ -133,6 +144,33 @@ def output_choice_match_word(key, match_word, keyboard):  # 輸出被選擇的�
     number = int(str(key)[1:-1]) - 1
     output_word = match_word[number]
     print(f"選擇的生字為 {output_word} ")
+
+    keyboard.press(pk.Key.backspace)  # 清除輸入的數字
+    keyboard.release(pk.Key.backspace)
+
     for x in range(len(output_word)):
         keyboard.press(output_word[x])
         keyboard.release(output_word[x])
+
+
+def output_mode_setup(key_output):  # 切換輸出模式
+    if key_output:
+        print("關閉匹配生字輸出")
+        key_output = False
+    else:
+        print("開啟匹配生字輸出")
+        key_output = True
+
+    return key_output
+
+
+def output_mode_setup_tip(key_output, keyboard, tip_symbol):  # 切換輸出模式的提示
+    if not key_output:
+        keyboard.press(tip_symbol)
+        keyboard.release(tip_symbol)
+
+
+def output_error(keyboard, tip_symbol, ex):  # 選取不存在的生字時
+    print(f"警告! 選取的生字時出現錯誤 : {str(ex)} ")
+    keyboard.press(tip_symbol)
+    keyboard.press(tip_symbol)

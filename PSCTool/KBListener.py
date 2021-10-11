@@ -8,6 +8,7 @@ key_input = False
 key_output = False
 match_word = []
 keyboard = pk.Controller()
+tip_symbol = "$"
 
 
 def load_json(setting):  # 讀取設定檔用
@@ -26,6 +27,7 @@ def key_up(key):  # 鬆開按鍵時執行
     global key_output  # 輸出生字的開關
     global keyboard  # 虛擬鍵盤
     global match_word  # 儲存匹配的生字
+    global tip_symbol  # 用於模式切換的提示
 
     PF.on_release_text(key)  # 輸出文本
 
@@ -33,17 +35,19 @@ def key_up(key):  # 鬆開按鍵時執行
     if key == pk.Key.esc:  # 退出監聽
         return PF.exit_listen()
 
+    if key_input:  # 啟用時儲存生字
+        PF.save_words(key, input_vocabulary, tip_symbol)
+
     if key == pk.Key.ctrl_l:  # *啟動/關閉儲存生字的功能
+        PF.save_words_setup_tip(key_input, keyboard, tip_symbol)  # 提示功能
         key_input = PF.save_words_setup(key_input)
 
     if key == pk.Key.alt_gr:  # 顯示目前的生字
         PF.current_words(input_vocabulary)
 
-    if key_input:  # 啟用時儲存生字
-        PF.save_words(key, input_vocabulary)
-
     if key == pk.Key.ctrl_r:  # *清空儲存的生字
-        input_vocabulary = PF.clean_save_word(input_vocabulary)
+        PF.clean_word_tip(keyboard, tip_symbol)
+        input_vocabulary = PF.clean_word(input_vocabulary)
 
     if key == pk.Key.shift_l:  # 按生字搜索功能
         if len(input_vocabulary) > 0:
@@ -58,16 +62,15 @@ def key_up(key):  # 鬆開按鍵時執行
             PF.output_match_word_number(match_word, keyboard)
 
     if key == pk.Key.alt_l:  # 用於選擇和輸出匹配的生字
-        if key_output:
-            print("關閉匹配生字輸出")
-            key_output = False
-        else:
-            print("開啟匹配生字輸出")
-            key_output = True
+        PF.output_mode_setup_tip(key_output, keyboard, tip_symbol)
+        key_output = PF.output_mode_setup(key_output)
 
     if key_output:  # 啟用時輸出被選擇的匹配生字
         if str(key)[1:-1].isdigit() and len(match_word) != 0:
-            PF.output_choice_match_word(key, match_word, keyboard)
+            try:
+                PF.output_choice_match_word(key, match_word, keyboard)
+            except EOFError as ex:
+                PF.output_error(keyboard, tip_symbol, ex)
 
 
 class KBListener:  # 用於監聽鍵盤線程
