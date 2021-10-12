@@ -173,4 +173,4 @@ def output_mode_setup_tip(key_output, keyboard, tip_symbol):  # 切換輸出模�
 def output_error(keyboard, tip_symbol, ex):  # 選取不存在的生字時
     print(f"警告! 選取的生字時出現錯誤 : {str(ex)} ")
     keyboard.press(tip_symbol)
-    keyboard.press(tip_symbol)
+    keyboard.release(tip_symbol)

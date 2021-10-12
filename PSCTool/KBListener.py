@@ -69,7 +69,7 @@ def key_up(key):  # 鬆開按鍵時執行
         if str(key)[1:-1].isdigit() and len(match_word) != 0:
             try:
                 PF.output_choice_match_word(key, match_word, keyboard)
-            except EOFError as ex:
+            except Exception as ex:
                 PF.output_error(keyboard, tip_symbol, ex)
 
 
