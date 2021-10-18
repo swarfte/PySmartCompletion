@@ -3,7 +3,7 @@
 ### 程式示範:https://www.youtube.com/watch?v=Z3Vabk1IDag&ab_channel=SwarfteChau
 
 ### 使用方法
-* 第一步 開啟main.py(終端機提示模式) 或 main.exe(隱身模式)
+* 第一步 開啟**main.py**(終端機提示模式) 或 **PSC.exe**(隱身模式)
 * 第二步 按下**左ctrl**開啟輸入模式 開啟後會出現"$"提示字符
 * 第三步 輸入任意數量的英文字
 * 第四步 選擇匹配的模式
@@ -36,4 +36,4 @@
 * **WordBank1.json**為預設的數據庫
 * 在**setting.json**中修改**WordBank_path**屬性能指定新的數據庫
 
-### 版本號:V1.1.6
+### 版本號:V1.1.8
