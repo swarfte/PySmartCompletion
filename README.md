@@ -1,8 +1,8 @@
-#英文單詞補全
+# 英文單詞補全
 
-###程式示範:https://www.youtube.com/watch?v=Z3Vabk1IDag&ab_channel=SwarfteChau
+### 程式示範:https://www.youtube.com/watch?v=Z3Vabk1IDag&ab_channel=SwarfteChau
 
-###使用方法
+### 使用方法
 * 第一步 開啟main.py(終端機提示模式) 或 main.exe(隱身模式)
 * 第二步 按下**左ctrl**開啟輸入模式 開啟後會出現"$"提示字符
 * 第三步 輸入任意數量的英文字
@@ -21,7 +21,7 @@
   * 如果按下的數字超過匹配的數字數量便會出現"$"提示字符
 * 按下**esc**即時退出鍵盤監聽
 
-###主要按鍵功能
+### 主要按鍵功能
 * **左ctrl** : 開啟/關閉輸入模式
 * **右ctrl** : 清空儲存的輸入生字
 * **左Shift** : 
@@ -31,9 +31,9 @@
 * **左alt**: 開啟/關閉輸出模式
 * **右alt** : (終端機)顯示目前儲存的生字
 
-###數據庫配置
+### 數據庫配置
 * 在**config**檔案夾中能加入額外的數據庫
 * **WordBank1.json**為預設的數據庫
 * 在**setting.json**中修改**WordBank_path**屬性能指定新的數據庫
 
-###版本號:V1.1.5
+### 版本號:V1.1.6
