@@ -96,29 +96,53 @@ def save_words_setup(key_input):  # 儲存生字功能
         return True
 
 
-def save_words_setup_tip(key_input, keyboard, tip_symbol):  # 儲存生字的提示
+def save_words_setup_tip(key_input, keyboard, tip_symbol, tip_str):  # 儲存生字的提示
     if not key_input:
         keyboard.press(tip_symbol)
         keyboard.release(tip_symbol)
+        tip_str = True
+        return tip_str
 
 
 def save_words(key, vocabulary, tip_symbol):  # 判斷生字
-    if key != pk.Key.ctrl_l and key != pk.Key.ctrl_r:  # 無視左右ctrl的開關操作和消除生字操作
-        if key != pk.Key.shift_l and key != pk.Key.shift_r:  # 無視左右shirt的搜索功能
-            if key != pk.Key.alt_l and key != pk.Key.alt_gr:  # 無視左右alt的輸出和視檢測生字操作
-                if str(key)[1:-1] != tip_symbol and key != pk.Key.backspace:
-                    vocabulary.append(str(key).replace("'", ""))  # 去除多餘的單引號
+    ignore_key = [
+        pk.Key.ctrl_l,
+        pk.Key.ctrl_r,
+        pk.Key.shift_l,
+        pk.Key.shift_r,
+        pk.Key.alt_l,
+        pk.Key.alt_gr,
+        pk.Key.backspace
+    ]
+    check_ignore_key = True  # 判斷是否為無視的按鍵
+    for x in ignore_key:
+        if key == x:
+            check_ignore_key = False
+
+    if check_ignore_key:
+        if str(key)[1:-1] != tip_symbol:
+            vocabulary.append(str(key).replace("'", ""))  # 去除多餘的單引號
+
+    # if key != pk.Key.ctrl_l and key != pk.Key.ctrl_r:  # 無視左右ctrl的開關操作和消除生字操作
+    #     if key != pk.Key.shift_l and key != pk.Key.shift_r:  # 無視左右shirt的搜索功能
+    #         if key != pk.Key.alt_l and key != pk.Key.alt_gr:  # 無視左右alt的輸出和視檢測生字操作
+    #             if str(key)[1:-1] != tip_symbol and key != pk.Key.backspace: #無視提示字符
+    #                 vocabulary.append(str(key).replace("'", ""))  # 去除多餘的單引號
 
 
 def clean_word(vocabulary):  # 清空保留的生字
     print('清空儲存的生字')
     vocabulary = []
-    return vocabulary
+    key_input = False
+    key_output = False
+    return vocabulary, key_input, key_output
 
 
-def clean_word_tip(keyboard, tip_symbol):  # 清除儲存生字的提示
+def clean_word_tip(keyboard, tip_symbol, tip_str):  # 清除儲存生字的提示
     keyboard.press(tip_symbol)
     keyboard.release(tip_symbol)
+    tip_str = True
+    return tip_str
 
 
 def exit_listen():  # 退出監聽
@@ -164,13 +188,23 @@ def output_mode_setup(key_output):  # 切換輸出模式
     return key_output
 
 
-def output_mode_setup_tip(key_output, keyboard, tip_symbol):  # 切換輸出模式的提示
+def output_mode_setup_tip(key_output, keyboard, tip_symbol, tip_str):  # 切換輸出模式的提示
     if not key_output:
         keyboard.press(tip_symbol)
         keyboard.release(tip_symbol)
+        tip_str = True
+        return tip_str
 
 
 def output_error(keyboard, tip_symbol, ex):  # 選取不存在的生字時
     print(f"警告! 選取的生字時出現錯誤 : {str(ex)} ")
     keyboard.press(tip_symbol)
     keyboard.release(tip_symbol)
+
+
+def auto_delete_tip_str(keyboard, tip_str):
+    if tip_str:
+        keyboard.press(pk.Key.backspace)  # 清除輸入的數字
+        keyboard.release(pk.Key.backspace)
+        tip_str = False
+    return tip_str
