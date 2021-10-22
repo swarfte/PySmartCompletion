@@ -80,7 +80,7 @@ def key_word_match(config, vocabulary, begin):  # 多生字匹配模式
 
 
 def get_word_list(config):  # 獲取數據庫的生字
-    target = "WordBank_path"  # 指定讀取的數據庫
+    target = "data_path"  # 指定讀取的數據庫
     vocabulary_type = "english_word"  # 指定讀取的生字
     data = open_json(open_json(config)[target])[vocabulary_type]  # *獲取對應數據庫的全部英文生字
 
